@@ -1,6 +1,9 @@
 sealed class Result<T, E> {
   const new();
 
+  bool get isOk => this is Ok<T, E>;
+  bool get isErr => this is Err<T, E>;
+
   T unwrap() => switch (this) {
     Ok(value: final val) => val,
     Err() => throw StateError('Called `unwrap()` on Err'),
@@ -8,6 +11,14 @@ sealed class Result<T, E> {
   E unwrapErr() => switch (this) {
     Err(value: final val) => val,
     Ok() => throw StateError('Called `unwrapErr()` on Ok'),
+  };
+
+  R fold<R>({
+    required R Function(E err) onErr,
+    required R Function(T val) onOk,
+  }) => switch (this) {
+    Ok(value: final val) => onOk(val),
+    Err(value: final err) => onErr(err),
   };
 }
 

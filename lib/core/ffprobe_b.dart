@@ -1,20 +1,20 @@
-import 'dart:io';
-
 import 'package:ffmpeg_bin/core/result_t.dart';
 
-class FFprobeB {
-  final String _libPath;
-  const new(this._libPath);
+import 'package:ffmpeg_bin/core/i_binary.dart';
 
-  Future<Result<String, String>> version() async {
-    try {
-      final p = await Process.run(_libPath, ['-version']);
-      if (p.exitCode > 0) {
-        return Err(p.stderr);
-      }
-      return Ok(p.stdout);
-    } catch (e) {
-      return Err(e.toString());
-    }
+class FFprobeB extends IBinary {
+  const new(super.libPath);
+
+  Future<Result<String, String>> checkInfo(String path) async {
+    final res = await run([path]);
+    return res.fold(
+      onErr: (err) => Err(err),
+      onOk: (val) {
+        if (val.stderr.toString().isNotEmpty) {
+          return Ok(val.stderr.toString());
+        }
+        return Ok(val.stdout.toString());
+      },
+    );
   }
 }

@@ -4,6 +4,7 @@ import 'package:android_native_path/android_native_path.dart';
 import 'package:ffmpeg_bin/core/ffmpeg_b.dart';
 import 'package:ffmpeg_bin/core/ffprobe_b.dart';
 import 'package:ffmpeg_bin/core/keys.dart';
+import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/core/utils.dart';
 
 class FFmpegBin {
@@ -13,6 +14,12 @@ class FFmpegBin {
 
   late String _ffmpegLib;
   late String _ffprobeLib;
+
+  /// ffmpeg binary path
+  String get ffmpegLib => _ffmpegLib;
+
+  /// ffprobe binary path
+  String get ffprobeLib => _ffprobeLib;
 
   ///
   /// make sure -> `WidgetsFlutterBinding.ensureInitialized();`
@@ -41,4 +48,17 @@ class FFmpegBin {
 
   late final FFmpegB ffmpeg = .new(_ffmpegLib);
   late final FFprobeB ffprobe = .new(_ffprobeLib);
+
+  /// kill process
+  Result<bool, String> killPid(
+    int pid, [
+    ProcessSignal signal = ProcessSignal.sigterm,
+  ]) {
+    try {
+      final p = Process.killPid(pid, signal);
+      return Ok(p);
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
 }
