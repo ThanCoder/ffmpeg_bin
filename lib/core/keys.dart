@@ -1,7 +1,11 @@
 const String ffmpegLibName = 'libffmpeg_b.so';
 const String ffprobeLibName = 'libffprobe_b.so';
 
-const String linuxLibUrl = '';
-const String windowLibUrl = '';
-const String androidArmLibUrl = '';
-const String androidArm64LibUrl = '';
+const String linuxLibUrl =
+    'https://github.com/ThanCoder/ffmpeg_bin/releases/download/ffmpeg-9.0.1-general-bin/ffmpeg-9.0.1-general-bin-linux.zip';
+const String windowLibUrl =
+    'https://github.com/ThanCoder/ffmpeg_bin/releases/download/ffmpeg-9.0.1-general-bin/ffmpeg-9.0.1-general-bin-window.zip';
+const String androidArmLibUrl =
+    'https://github.com/ThanCoder/ffmpeg_bin/releases/download/ffmpeg-9.0.1-general-bin/ffmpeg-9.0.1-general-bin-android-arm.zip';
+const String androidArm64LibUrl =
+    'https://github.com/ThanCoder/ffmpeg_bin/releases/download/ffmpeg-9.0.1-general-bin/ffmpeg-9.0.1-general-bin-android-arm64.zip';
