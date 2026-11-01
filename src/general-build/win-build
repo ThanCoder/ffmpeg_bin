@@ -1,0 +1,34 @@
+git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+cd ffmpeg
+
+
+make distclean
+make clean
+
+
+CFLAGS="-Os -ffunction-sections -fdata-sections" \
+LDFLAGS="-Wl,--gc-sections" \
+./configure \
+  --target-os=mingw32 \
+  --arch=x86_64 \
+  --cross-prefix=x86_64-w64-mingw32- \
+  --prefix="$PWD/build/window" \
+  --enable-gpl \
+  --enable-version3 \
+  --enable-static \
+  --disable-shared \
+  --disable-doc \
+  --disable-libonnxruntime \
+  --disable-libopenvino \
+  --disable-libtensorflow \
+  --disable-libtorch \
+  --enable-swscale \
+  --enable-avdevice \
+  --enable-network
+
+  
+  --enable-pthreads
+
+
+make -j$(nproc)
+make install

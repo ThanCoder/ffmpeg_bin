@@ -1,0 +1,16 @@
+# Run with `dart run ffigen --config ffigen.yaml`.
+name: FfmpegBinBindings
+description: |
+  Bindings for `src/ffmpeg_bin.h`.
+
+  Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
+output: 'lib/ffmpeg_bin_bindings_generated.dart'
+headers:
+  entry-points:
+    - 'src/ffmpeg_bin.h'
+  include-directives:
+    - 'src/ffmpeg_bin.h'
+ffi-native:
+comments:
+  style: any
+  length: full
