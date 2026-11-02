@@ -32,7 +32,9 @@ Future<void> makeExecutableAndRun(String filePath) async {
       return;
     }
 
-    print('Successfully granted execution permission!');
+    print(
+      'Successfully granted execution permission! - ${filePath.split(Platform.pathSeparator).last}',
+    );
   } catch (e) {
     print('Error: $e');
   }

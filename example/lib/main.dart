@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/ffmpeg_bin.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -19,6 +22,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String resultText = '';
+  Uint8List? bytes;
   final pkg = FFmpegBin.instance;
   void onTestFFmpeg() async {
     final res = await pkg.ffmpeg.getVersion();
@@ -42,15 +46,42 @@ class _MyAppState extends State<MyApp> {
     setState(() {});
   }
 
+  String get aPath => '/home/thancoder/Music/test1.mp3';
+  String get vPath => '/home/thancoder/Videos/Jennifer Body.mp4';
+
   void onCheckAudioInfo() async {
-    final res = await pkg.ffprobe.checkInfo('/home/thancoder/Music/test.mp3');
+    final res = await pkg.ffmpeg.video.saveThumbnail(
+      vPath,
+      '/home/thancoder/test.png',
+    );
+    // final bytesRes = await pkg.ffmpeg.video.getThumbnailBytes(vPath);
     switch (res) {
-      case Ok(value: final val):
-        resultText = val;
+      case Ok(value: final bytes):
+        print('success: $bytes');
+        // resultText = 'data: ${bytes.length}';
+        // this.bytes = bytes;
+        break;
       case Err(value: final err):
-        resultText = 'Error: $err';
+        resultText = err;
     }
     setState(() {});
+    return;
+    // final res = await pkg.ffprobe.getCoverArtInfoString(aPath);
+    // switch (res) {
+    //   case Ok(value: final val):
+    //     resultText = val;
+    //   case Err(value: final err):
+    //     resultText = 'Error: $err';
+    // }
+    // setState(() {});
+  }
+
+  void setAudioTags() async {
+    await pkg.ffmpeg.audio.writeCoverArt(
+      aPath,
+      '/home/thancoder/Music/test1.mp3',
+      coverArtPath: '/home/thancoder/Pictures/ChatGPT Image Sep 19, 2026, 02_12_12 PM.png',
+    );
   }
 
   @override
@@ -66,8 +97,34 @@ class _MyAppState extends State<MyApp> {
           FloatingActionButton(heroTag: '3', onPressed: onCheckAudioInfo),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(padding: const .all(10), child: Text(resultText)),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: .all(10),
+            sliver: SliverList.list(
+              children: [
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    FilledButton(
+                      onPressed: setAudioTags,
+                      child: Text('Set Audio Tag'),
+                    ),
+                  ],
+                ),
+                if (bytes != null)
+                  Image.memory(
+                    bytes!,
+                    width: 80,
+                    height: 80,
+                    errorBuilder: (context, error, stackTrace) => Text('Error'),
+                  ),
+                SelectableText(resultText),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

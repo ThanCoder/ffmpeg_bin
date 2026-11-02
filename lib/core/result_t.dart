@@ -13,13 +13,22 @@ sealed class Result<T, E> {
     Ok() => throw StateError('Called `unwrapErr()` on Ok'),
   };
 
-  R fold<R>({
-    required R Function(E err) onErr,
-    required R Function(T val) onOk,
-  }) => switch (this) {
-    Ok(value: final val) => onOk(val),
-    Err(value: final err) => onErr(err),
-  };
+  R fold<R>({R Function(E err)? onErr, required R Function(T val) onOk}) =>
+      switch (this) {
+        Ok(value: final val) => onOk(val),
+        Err(value: final err) => onErr == null ? (Err(err) as R) : onErr(err),
+      };
+  Future<R> foldAsync<R>({
+    Future<R> Function(E err)? onErr,
+    required Future<R> Function(T val) onOk,
+  }) async {
+    final res = switch (this) {
+      Ok(value: final val) => await onOk(val),
+      Err(value: final err) =>
+        onErr == null ? (Err(err) as R) : await onErr(err),
+    };
+    return res;
+  }
 }
 
 class Ok<T, E> extends Result<T, E> {
