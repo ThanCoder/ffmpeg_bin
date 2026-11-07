@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:ffmpeg_bin/core/result_t.dart';
 
-import 'package:ffmpeg_bin/core/i_binary.dart';
+import 'package:ffmpeg_bin/core/binary/i_binary.dart';
 
 class FFprobeB extends IBinary {
   const new(super.libPath);
@@ -31,6 +31,7 @@ class FFprobeB extends IBinary {
     ]);
 
     return p.fold(
+       onErr: (err) => Err(err),
       onOk: (val) {
         final err = val.stderr.toString();
         if (err.isNotEmpty) {

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:android_native_path/android_native_path.dart';
-import 'package:ffmpeg_bin/core/ffmpeg_b.dart';
-import 'package:ffmpeg_bin/core/ffprobe_b.dart';
+import 'package:ffmpeg_bin/core/binary/ffmpeg_b.dart';
+import 'package:ffmpeg_bin/core/binary/ffprobe_b.dart';
 import 'package:ffmpeg_bin/core/keys.dart';
 import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/core/utils.dart';
@@ -15,16 +15,16 @@ class FFmpegBin {
   late String _ffmpegLib;
   late String _ffprobeLib;
 
-  /// ffmpeg binary path
-  String get ffmpegLib => _ffmpegLib;
+  late final FFmpegB ffmpeg = .new(_ffmpegLib);
+  late final FFprobeB ffprobe = .new(_ffprobeLib);
 
-  /// ffprobe binary path
-  String get ffprobeLib => _ffprobeLib;
+  bool _showDebug = true;
 
   ///
   /// make sure -> `WidgetsFlutterBinding.ensureInitialized();`
   ///
-  Future<void> init() async {
+  Future<void> initialize({bool showDebugLog = true}) async {
+    _showDebug = showDebugLog;
     if (Platform.isLinux || Platform.isWindows) {
       _ffmpegLib = getDesktopLibFullPath(ffmpegLibName);
       _ffprobeLib = getDesktopLibFullPath(ffprobeLibName);
@@ -46,9 +46,6 @@ class FFmpegBin {
     throw UnsupportedError('Unsupported ${Platform.operatingSystem}!');
   }
 
-  late final FFmpegB ffmpeg = .new(_ffmpegLib);
-  late final FFprobeB ffprobe = .new(_ffprobeLib);
-
   /// kill process
   Result<bool, String> killPid(
     int pid, [
@@ -60,5 +57,12 @@ class FFmpegBin {
     } catch (e) {
       return Err(e.toString());
     }
+  }
+
+  /// show debug log
+  void showDebugLog(String msg) {
+    if (!_showDebug) return;
+    // ignore: avoid_print
+    print(msg);
   }
 }

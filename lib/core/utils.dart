@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:ffmpeg_bin/ffmpeg_bin.dart';
 import 'package:path/path.dart' as p;
 
 String getDesktopLibFullPath(String libName) {
@@ -28,14 +29,16 @@ Future<void> makeExecutableAndRun(String filePath) async {
     final chmodResult = await Process.run('chmod', ['+x', filePath]);
 
     if (chmodResult.exitCode != 0) {
-      print('Failed to grant execution permission: ${chmodResult.stderr}');
+      FFmpegBin.instance.showDebugLog(
+        'Failed to grant execution permission: ${chmodResult.stderr}',
+      );
       return;
     }
 
-    print(
+    FFmpegBin.instance.showDebugLog(
       'Successfully granted execution permission! - ${filePath.split(Platform.pathSeparator).last}',
     );
   } catch (e) {
-    print('Error: $e');
+    FFmpegBin.instance.showDebugLog('Error: $e');
   }
 }

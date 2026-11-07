@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FFmpegBin.instance.init();
+  await FFmpegBin.instance.initialize();
 
   runApp(MaterialApp(home: const MyApp()));
 }

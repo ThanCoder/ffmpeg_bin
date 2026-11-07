@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:ffmpeg_bin/core/ffmpeg_b.dart';
+import 'package:ffmpeg_bin/core/binary/ffmpeg_b.dart';
 import 'package:ffmpeg_bin/core/result_t.dart';
 
 class VideoB {
@@ -39,6 +39,7 @@ class VideoB {
       imagePath,
     ]);
     return p.fold(
+      onErr: (err) => Err(err),
       onOk: (val) {
         final err = val.stderr.toString();
         if (err.isNotEmpty) {
@@ -85,6 +86,7 @@ class VideoB {
       'pipe:1',
     ]);
     return p.foldAsync(
+       onErr: (err) async=> Err(err),
       onOk: (val) async {
         try {
           final bytesFut = val.stdout.fold(

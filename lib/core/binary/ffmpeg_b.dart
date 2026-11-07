@@ -1,7 +1,7 @@
-import 'package:ffmpeg_bin/core/audio_b.dart';
+import 'package:ffmpeg_bin/core/binary/audio_b.dart';
 
-import 'package:ffmpeg_bin/core/i_binary.dart';
-import 'package:ffmpeg_bin/core/video_b.dart';
+import 'package:ffmpeg_bin/core/binary/i_binary.dart';
+import 'package:ffmpeg_bin/core/binary/video_b.dart';
 
 class FFmpegB extends IBinary {
   new(super.libPath);
