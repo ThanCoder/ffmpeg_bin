@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:ffmpeg_bin/core/binary/ffmpeg_b.dart';
 import 'package:ffmpeg_bin/core/result_t.dart';
-import 'package:ffmpeg_bin/core/utils.dart';
 
 class VideoB {
   final String libPath;

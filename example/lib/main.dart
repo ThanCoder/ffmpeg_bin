@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'dart:io';
-
 import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/ffmpeg_bin.dart';
 import 'package:flutter/foundation.dart';
