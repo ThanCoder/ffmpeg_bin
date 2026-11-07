@@ -6,11 +6,13 @@ abstract class IBinary {
   final String libPath;
   const new(this.libPath);
 
+  /// get binary version
   Future<Result<String, String>> getVersion() async {
     try {
       final p = await Process.run(libPath, ['-version']);
-      if (p.exitCode > 0) {
-        return Err(p.stderr);
+      final err = p.stderr.toString();
+      if (err.isNotEmpty) {
+        return Err(err);
       }
       return Ok(p.stdout);
     } catch (e) {

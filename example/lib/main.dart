@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/ffmpeg_bin.dart';
 import 'package:flutter/foundation.dart';
@@ -24,6 +26,7 @@ class _MyAppState extends State<MyApp> {
   String resultText = '';
   Uint8List? bytes;
   final pkg = FFmpegBin.instance;
+
   void onTestFFmpeg() async {
     final res = await pkg.ffmpeg.getVersion();
     switch (res) {
@@ -50,14 +53,10 @@ class _MyAppState extends State<MyApp> {
   String get vPath => '/home/thancoder/Videos/Jennifer Body.mp4';
 
   void onCheckAudioInfo() async {
-    final res = await pkg.ffmpeg.video.saveThumbnail(
-      vPath,
-      '/home/thancoder/test.png',
-    );
-    // final bytesRes = await pkg.ffmpeg.video.getThumbnailBytes(vPath);
+    final res = await pkg.ffprobe.getFileInfo(aPath);
     switch (res) {
-      case Ok(value: final bytes):
-        print('success: $bytes');
+      case Ok(value: final data):
+        print('success: ${data.formatOrNull?.sizeLable}');
         // resultText = 'data: ${bytes.length}';
         // this.bytes = bytes;
         break;
@@ -92,9 +91,21 @@ class _MyAppState extends State<MyApp> {
         mainAxisSize: .min,
         spacing: 10,
         children: [
-          FloatingActionButton(heroTag: '1', onPressed: onTestFFmpeg),
-          FloatingActionButton(heroTag: '2', onPressed: onTestProb),
-          FloatingActionButton(heroTag: '3', onPressed: onCheckAudioInfo),
+          FloatingActionButton(
+            heroTag: '1',
+            onPressed: onTestFFmpeg,
+            child: Text('ffmpeg'),
+          ),
+          FloatingActionButton(
+            heroTag: '2',
+            onPressed: onTestProb,
+            child: Text('ffprobe'),
+          ),
+          FloatingActionButton(
+            heroTag: '3',
+            onPressed: onCheckAudioInfo,
+            child: Text('check'),
+          ),
         ],
       ),
       body: CustomScrollView(

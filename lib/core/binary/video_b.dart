@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:ffmpeg_bin/core/binary/ffmpeg_b.dart';
 import 'package:ffmpeg_bin/core/result_t.dart';
+import 'package:ffmpeg_bin/core/utils.dart';
 
 class VideoB {
   final String libPath;
@@ -64,7 +65,7 @@ class VideoB {
   ///   -c:v mjpeg \
   ///   pipe:1
   /// ```
-  Future<Result<Uint8List, String>> getThumbnailBytes(
+  Future<Result<Uint8List, String>> genThumbnailBytes(
     String path, {
     Duration duration = const Duration(seconds: 5),
   }) async {
@@ -86,7 +87,7 @@ class VideoB {
       'pipe:1',
     ]);
     return p.foldAsync(
-       onErr: (err) async=> Err(err),
+      onErr: (err) async => Err(err),
       onOk: (val) async {
         try {
           final bytesFut = val.stdout.fold(

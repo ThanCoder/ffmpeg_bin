@@ -15,8 +15,15 @@ class FFmpegBin {
   late String _ffmpegLib;
   late String _ffprobeLib;
 
+  /// ffmpeg binary
   late final FFmpegB ffmpeg = .new(_ffmpegLib);
+
+  /// ffprobe binary
   late final FFprobeB ffprobe = .new(_ffprobeLib);
+
+  ///supported platforms
+  bool get isSupported =>
+      Platform.isLinux || Platform.isWindows || Platform.isAndroid;
 
   bool _showDebug = true;
 
