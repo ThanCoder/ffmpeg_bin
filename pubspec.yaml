@@ -1,6 +1,8 @@
 name: ffmpeg_bin
 description: "A Flutter/Dart package that provides a convenient interface for executing **FFmpeg and FFprobe** commands."
 repository: https://github.com/ThanCoder/ffmpeg_bin.git
+homepage: https://pub.dev/packages/ffmpeg_bin
+
 version: 0.1.0
 
 environment:
