@@ -31,20 +31,24 @@ pkg.ffprobe.runSync(args);
 await pkg.ffprobe.start(args);
 
 final res = await pkg.ffmpeg.getVersion();
-switch (res) {
-    case Ok(value: final val):
-    resultText = val;// version string
-    case Err(value: final err):
-    resultText = 'Error: $err'; //error
-}
-
- final res = await pkg.ffprobe.getVersion();
-switch (res) {
-    case Ok(value: final val):
-    resultText = val;
-    case Err(value: final err):
+res.onResult(
+    onErr: (err) => setState(() {
     resultText = 'Error: $err';
-}
+    }),
+    onOk: (val) => setState(() {
+    resultText = val.text;
+    }),
+);
+
+final res = await pkg.ffprobe.getVersion();
+res.onResult(
+    onErr: (err) => setState(() {
+    resultText = 'Error: $err';
+    }),
+    onOk: (val) => setState(() {
+    resultText = val.text;
+    }),
+);
 
 ```
 

@@ -13,6 +13,20 @@ sealed class Result<T, E> {
     Ok() => throw StateError('Called `unwrapErr()` on Ok'),
   };
 
+  void onResult({
+    required void Function(E err) onErr,
+    required void Function(T val) onOk,
+  }) {
+    switch (this) {
+      case Ok(value: final val):
+        onOk(val);
+        break;
+      case Err(value: final err):
+        onErr(err);
+        break;
+    }
+  }
+
   R fold<R>({
     required R Function(E err) onErr,
     required R Function(T val) onOk,

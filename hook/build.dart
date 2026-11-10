@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:archive/archive.dart';
 import 'package:code_assets/code_assets.dart';
+import 'package:ffmpeg_bin/core/archive_lib.dart';
+import 'package:ffmpeg_bin/core/utils.dart';
 import 'package:hooks/hooks.dart';
 import 'package:path/path.dart' as p;
 
@@ -60,71 +61,7 @@ Future<void> extractLib(
 
   // download
   await downloadLib(config.downloadUrl, libZipFile);
-  await extractZip(
-    libZipFile,
-    outDir: Directory(nativeAssets),
-    libs: config.libs,
-  );
-}
-
-Future<void> downloadLib(String url, File output) async {
-  final client = HttpClient();
-
-  try {
-    final request = await client.getUrl(Uri.parse(url));
-    final response = await request.close();
-
-    if (response.statusCode != HttpStatus.ok) {
-      throw HttpException(
-        'Download failed: ${response.statusCode}',
-        uri: Uri.parse(url),
-      );
-    }
-
-    await output.parent.create(recursive: true);
-
-    final sink = output.openWrite();
-
-    try {
-      await response.pipe(sink);
-    } finally {
-      await sink.close();
-    }
-  } catch (e) {
-    if (await output.exists()) {
-      await output.delete();
-    }
-
-    rethrow;
-  } finally {
-    client.close(force: true);
-  }
-}
-
-Future<void> extractZip(
-  File input, {
-  required Directory outDir,
-  required List<ArchiveLib> libs,
-}) async {
-  final archive = ZipDecoder().decodeBytes(input.readAsBytesSync());
-  await outDir.create(recursive: true);
-
-  for (var lib in libs) {
-    final libFile = File(p.join(outDir.path, lib.libName));
-    if (libFile.existsSync()) continue;
-    final f = archive.findFile(lib.archivePath);
-    if (f == null) {
-      throw PathNotFoundException(lib.archivePath, .new('Not Found Lib Path'));
-    }
-    await libFile.writeAsBytes(f.content, flush: true);
-  }
-}
-
-class ArchiveLib {
-  final String archivePath;
-  final String libName;
-
-  const ArchiveLib({required this.archivePath, required this.libName});
+  await extractZip(libZipFile, outDir: outDir, libs: config.libs);
 }
 
 class LibArchiveConfig {

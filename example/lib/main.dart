@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/ffmpeg_bin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,24 +26,26 @@ class _MyAppState extends State<MyApp> {
 
   void onTestFFmpeg() async {
     final res = await pkg.ffmpeg.getVersion();
-    switch (res) {
-      case Ok(value: final val):
-        resultText = val;
-      case Err(value: final err):
+    res.onResult(
+      onErr: (err) => setState(() {
         resultText = 'Error: $err';
-    }
-    setState(() {});
+      }),
+      onOk: (val) => setState(() {
+        resultText = val;
+      }),
+    );
   }
 
   void onTestProb() async {
     final res = await pkg.ffprobe.getVersion();
-    switch (res) {
-      case Ok(value: final val):
-        resultText = val;
-      case Err(value: final err):
+    res.onResult(
+      onErr: (err) => setState(() {
         resultText = 'Error: $err';
-    }
-    setState(() {});
+      }),
+      onOk: (val) => setState(() {
+        resultText = val;
+      }),
+    );
   }
 
   String get aPath => '/home/thancoder/Music/test1.mp3';
@@ -52,16 +53,14 @@ class _MyAppState extends State<MyApp> {
 
   void onCheckAudioInfo() async {
     final res = await pkg.ffprobe.getFileInfo(aPath);
-    switch (res) {
-      case Ok(value: final data):
-        print('success: ${data.formatOrNull?.sizeLable}');
-        // resultText = 'data: ${bytes.length}';
-        // this.bytes = bytes;
-        break;
-      case Err(value: final err):
-        resultText = err;
-    }
-    setState(() {});
+    res.onResult(
+      onErr: (err) => setState(() {
+        resultText = 'Error: $err';
+      }),
+      onOk: (val) => setState(() {
+        resultText = val.text;
+      }),
+    );
     return;
     // final res = await pkg.ffprobe.getCoverArtInfoString(aPath);
     // switch (res) {
