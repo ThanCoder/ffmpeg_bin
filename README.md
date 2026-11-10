@@ -4,6 +4,9 @@ A Flutter/Dart package that provides a convenient interface for executing **FFmp
 
 Supports asynchronous execution, synchronous execution, and process streaming through a simple API.
 
+- [x] [Initialization](#initialization)
+- [x] [Android Configuration](#android-configuration)
+
 ## Example Usage
 
 ### Initialization
