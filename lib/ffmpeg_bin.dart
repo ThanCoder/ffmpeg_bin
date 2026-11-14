@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:android_native_path/android_native_path.dart';
 import 'package:ffmpeg_bin/core/binary/ffmpeg_b.dart';
 import 'package:ffmpeg_bin/core/binary/ffprobe_b.dart';
 import 'package:ffmpeg_bin/core/keys.dart';
 import 'package:ffmpeg_bin/core/result_t.dart';
 import 'package:ffmpeg_bin/core/utils.dart';
+import 'package:android_native_path/android_native_path.dart';
 
 class FFmpegBin {
   static final FFmpegBin instance = FFmpegBin._();

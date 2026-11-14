@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:code_assets/code_assets.dart';
-import 'package:ffmpeg_bin/core/archive_lib.dart';
-import 'package:ffmpeg_bin/core/utils.dart';
 import 'package:hooks/hooks.dart';
 import 'package:path/path.dart' as p;
+import 'package:archive/archive.dart';
 
 import 'package:ffmpeg_bin/core/keys.dart';
 
@@ -37,31 +36,11 @@ void main(List<String> args) async {
   });
 }
 
-Future<void> extractLib(
-  LibArchiveConfig config, {
-  required String nativeAssets,
-}) async {
-  final outDir = Directory(p.join(nativeAssets, config.platform, config.arch));
-  if (!outDir.existsSync()) {
-    await outDir.create(recursive: true);
-  }
+class ArchiveLib {
+  final String archivePath;
+  final String libName;
 
-  final libFiles = config.libs
-      .map((lib) => File(p.join(outDir.path, lib.libName)))
-      .toList();
-  if (libFiles.any((e) => e.existsSync())) return;
-  final libZipFile = File(
-    p.join(nativeAssets, 'ffmpeg_bin-${config.platform}-${config.arch}.zip'),
-  );
-  if (libZipFile.existsSync()) {
-    await extractZip(libZipFile, outDir: outDir, libs: config.libs);
-    return;
-  }
-  // libZipFile.writeAsStringSync('contents');
-
-  // download
-  await downloadLib(config.downloadUrl, libZipFile);
-  await extractZip(libZipFile, outDir: outDir, libs: config.libs);
+  const ArchiveLib({required this.archivePath, required this.libName});
 }
 
 class LibArchiveConfig {
@@ -128,5 +107,85 @@ class LibArchiveConfig {
     throw UnsupportedError(
       'Not Supported: ${targetOS.name} - ${targetArch.name}',
     );
+  }
+}
+
+Future<void> extractLib(
+  LibArchiveConfig config, {
+  required String nativeAssets,
+}) async {
+  final outDir = Directory(p.join(nativeAssets, config.platform, config.arch));
+  if (!outDir.existsSync()) {
+    await outDir.create(recursive: true);
+  }
+
+  final libFiles = config.libs
+      .map((lib) => File(p.join(outDir.path, lib.libName)))
+      .toList();
+  if (libFiles.any((e) => e.existsSync())) return;
+  final libZipFile = File(
+    p.join(nativeAssets, 'ffmpeg_bin-${config.platform}-${config.arch}.zip'),
+  );
+  if (libZipFile.existsSync()) {
+    await extractZip(libZipFile, outDir: outDir, libs: config.libs);
+    return;
+  }
+  // libZipFile.writeAsStringSync('contents');
+
+  // download
+  await downloadLib(config.downloadUrl, libZipFile);
+  await extractZip(libZipFile, outDir: outDir, libs: config.libs);
+}
+
+Future<void> downloadLib(String url, File output) async {
+  final client = HttpClient();
+
+  try {
+    final request = await client.getUrl(Uri.parse(url));
+    final response = await request.close();
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw HttpException(
+        'Download failed: ${response.statusCode}',
+        uri: Uri.parse(url),
+      );
+    }
+
+    await output.parent.create(recursive: true);
+
+    final sink = output.openWrite();
+
+    try {
+      await response.pipe(sink);
+    } finally {
+      await sink.close();
+    }
+  } catch (e) {
+    if (await output.exists()) {
+      await output.delete();
+    }
+
+    rethrow;
+  } finally {
+    client.close(force: true);
+  }
+}
+
+Future<void> extractZip(
+  File input, {
+  required Directory outDir,
+  required List<ArchiveLib> libs,
+}) async {
+  final archive = ZipDecoder().decodeBytes(input.readAsBytesSync());
+  await outDir.create(recursive: true);
+
+  for (var lib in libs) {
+    final libFile = File(p.join(outDir.path, lib.libName));
+    if (libFile.existsSync()) continue;
+    final f = archive.findFile(lib.archivePath);
+    if (f == null) {
+      throw PathNotFoundException(lib.archivePath, .new('Not Found Lib Path'));
+    }
+    await libFile.writeAsBytes(f.content, flush: true);
   }
 }
